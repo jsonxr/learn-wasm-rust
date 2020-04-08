@@ -1,5 +1,12 @@
-mod utils;
 use wasm_bindgen::prelude::*;
+
+// // A macro to provide `println!(..)`-style syntax for `console.log` logging.
+#[macro_use]
+macro_rules! log {
+  ( $( $t:tt )* ) => {
+      web_sys::console::log_1(&format!( $( $t )* ).into());
+  }
+}
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -7,12 +14,16 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-// // A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-  ( $( $t:tt )* ) => {
-      web_sys::console::log_1(&format!( $( $t )* ).into());
-  }
-}
+mod color;
+pub use color::*;
+mod vertex;
+pub use vertex::*;
+mod image;
+pub use image::*;
+mod geometry;
+pub use geometry::*;
+mod buffer_attributes;
+pub use buffer_attributes::*;
 
 #[wasm_bindgen(start)]
 pub fn main_js() -> Result<(), JsValue> {
@@ -23,41 +34,4 @@ pub fn main_js() -> Result<(), JsValue> {
 
   log!("main_js");
   Ok(())
-}
-
-#[wasm_bindgen]
-pub fn add_one(x: u32) -> u32 {
-  log!("add_one x:{}", x);
-  x + 1
-}
-
-#[wasm_bindgen]
-pub struct Color {
-  r: u8,
-  g: u8,
-  b: u8,
-  a: u8,
-}
-
-#[wasm_bindgen]
-pub struct Image {
-  pixels: Vec<Color>,
-}
-
-#[wasm_bindgen]
-impl Image {
-  #[wasm_bindgen(constructor)]
-  pub fn new() -> Image {
-    let color1 = Color { r: 60, g: 70, b: 90, a: 1 };
-    let color2 = Color { r: 255, g: 0, b: 0, a: 1 };
-    let pixels = vec![color1, color2];
-    Image {
-      pixels,
-    }
-  }
-
-  #[wasm_bindgen]
-  pub fn pixels_ptr(&self) -> *const Color {
-    self.pixels.as_ptr()
-  }
 }

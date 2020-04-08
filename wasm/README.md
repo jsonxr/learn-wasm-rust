@@ -49,6 +49,7 @@ const img = new Image();
 const ptr = img.pixels_ptr()
 const pixels = new Uint8Array(memory.buffer, ptr, 8);
 console.log(pixels);
+img.free();
 ```
 # Build
 ```sh
